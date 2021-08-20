@@ -123,7 +123,7 @@ class AuthController extends Controller
     public function logout() {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['status' => 'success', 'message' => 'Successfully logged out']);
     }
 
     /**

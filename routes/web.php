@@ -27,6 +27,6 @@ $router->group(['prefix' => 'api', 'middleware' => 'cors'], function () use ($ro
     $router->post('/login', 'AuthController@login');
     $router->post('/loginWithGoogle', 'AuthController@storeGoogle');
 
-    $router->post('/logout', 'AuthController@logout');
+    $router->get('/logout', 'AuthController@logout');
 
 });
