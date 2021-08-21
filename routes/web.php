@@ -22,6 +22,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'cors'], function () use ($ro
     
     $router->post('/me', 'UserController@me');
     $router->post('/megoogle', 'UserController@meGoogle');
+    $router->get('/user', 'UserController@user');
 
     $router->post('/register', 'AuthController@store');
     $router->post('/login', 'AuthController@login');

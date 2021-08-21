@@ -20,4 +20,10 @@ class UserController extends Controller
             return User::where('id', $session->user_id)->first();
         }
     }
+
+    public function user(Request $request) {
+        $custom_url = $request->url;
+
+        return User::where('custom_url', $custom_url)->first();
+    }
 }
