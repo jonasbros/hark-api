@@ -24,6 +24,15 @@ class UserController extends Controller
     public function user(Request $request) {
         $custom_url = $request->url;
 
-        return User::where('custom_url', $custom_url)->first();
+        $user = User::where('custom_url', $custom_url)->first();
+
+        if( isset($user->id) ) {
+            return $user;
+        }
+
+        return response()->json([
+            'status' => "error",
+            'message' => 'user not found'
+        ], 404);
     }
 }
