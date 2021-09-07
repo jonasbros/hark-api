@@ -32,7 +32,6 @@ class AuthController extends Controller
                 ], 422);
             }
             
-            $password = $request->password;
             $hashedPassword = Hash::make($request->password, [
                 'rounds' => 14,
             ]);
@@ -51,7 +50,6 @@ class AuthController extends Controller
             $user->last_login      = date('Y-m-d H:i:s');
             
             if( $user->save() ) {
-                $request->password = $password;
                 $this->login($request);
             }
 
@@ -68,10 +66,15 @@ class AuthController extends Controller
             $user = new User();
 
             $existingUser = $user->where('email', $request->email)->first();
+
+            $request->password = Hash::make($request->password, [
+                'rounds' => 14,
+            ]);
             // login if exists
             if( $existingUser ) {
-                $this->storeGoogleSession($existingUser->id, $request->token);
+                $this->login($request);
             }else {
+    
                 $user->display_name    = $request->name;
                 $user->name            = $request->name;
                 $user->email           = $request->email;
@@ -79,14 +82,14 @@ class AuthController extends Controller
                 $user->websites        = NULL;
                 $user->profile_picture = $request->picture;
                 $user->cover_picture   = NULL;
-                $user->password        = NULL;
+                $user->password        = $request->password;
                 $user->user_type       = 'user';
                 $user->custom_url      = time();
                 $user->birthdate       = NULL;
                 $user->last_login      = date('Y-m-d H:i:s');
     
                 if( $user->save() ) {
-                    $this->storeGoogleSession($user->id(), $request->token);
+                    $this->login($request);
                 }
             }
         }catch(\Exception $e) {
@@ -140,31 +143,6 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);    
-    }
-
-    // unused for now
-    protected function storeGoogleSession($user_id, $token) {
-        try {
-            $session = new Session();
-
-            $userSessionExists = $session->where('user_id', $user_id)->first();
-            if( $userSessionExists ) {
-                $userSessionExists->delete();
-            }
-
-            if( $session->firstOrCreate(['user_id' => $user_id, 'token' => $token]) ) {
-                echo json_encode([
-                    'status'  => 'success',
-                    'message' => 'User logged in!',
-                ]);
-            }
-        }catch(\Exception $e) {
-            echo json_encode([
-                'status' => 'error', 
-                'message' => $e->getMessage(),
-            ]);
-        }
-
     }
 
 }
