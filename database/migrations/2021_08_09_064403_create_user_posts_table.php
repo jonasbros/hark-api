@@ -18,9 +18,9 @@ class CreateUserPostsTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->string('title', 72);
             $table->longText('body');
-            $table->string('upload_url', 512);
-            $table->string('featured_image', 512);
-            $table->string('hashtags', 128);
+            $table->string('upload_url', 512)->nullable();
+            $table->string('featured_image', 512)->nullable();
+            $table->string('hashtags', 128)->nullable();
             $table->string('post_type', 32);
             $table->timestamps();
         });
