@@ -19,7 +19,7 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api', 'middleware' => 'cors'], function () use ($router) {
     $router->get('/artists', 'ArtistController@index');
-    $router->get('/getposts/{url}', 'UserPostController@get');
+    $router->get('/getposts/{url}/{perpage}', 'UserPostController@get');
     
     
     $router->post('/me', 'UserController@me');
