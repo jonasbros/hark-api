@@ -16,12 +16,12 @@ class CreateUserPostsTable extends Migration
         Schema::create('user_posts', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
-            $table->string('title', 72);
+            $table->string('title', 72)->nullable();
             $table->longText('body');
             $table->string('upload_url', 512)->nullable();
             $table->string('featured_image', 512)->nullable();
             $table->string('hashtags', 128)->nullable();
-            $table->string('post_type', 32);
+            $table->string('post_type', 32)->default('base');
             $table->timestamps();
         });
 
