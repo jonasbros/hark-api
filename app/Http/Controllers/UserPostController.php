@@ -44,16 +44,30 @@ class UserPostController extends Controller
             $user = auth()->user();
             $post = new UserPost();
             
-            $post->user_id = $user->id;
-            $post->body    = $request->postContent;
+            $post->user_id        = $user->id;
+            $post->body           = $request->postContent;
+            $post->upload_url     = $request->uploads;
+            $post->featured_image = $request->featuredImage;
+            $post->hashtags       = $request->hashtags;
 
             if( $post->save() ) {
+                $newPost = DB::table('user_posts')
+                            ->join('users', 'users.id', '=', 'user_posts.user_id')
+                            ->select('users.display_name', 'user_posts.*')
+                            ->where('user_posts.id', '=', $post->id)                           
+                            ->get();
+
                 return response()->json([
                     'status' => 'success', 
-                    'message' => 'Post successful!',
+                    'post'   => $newPost,
                 ], 200);
             }
         }
+
+        return response()->json([
+            'status' => 'error', 
+            'post'   => 'Oops! Something went wrong.',
+        ], 500);
     }
 
 }
