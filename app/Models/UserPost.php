@@ -12,4 +12,8 @@ class UserPost extends Model
     protected $fillable = [
         'user_id',
     ];
+
+    public function likes() {
+        return $this->hasMany(UserPostLikes::class);
+    }
 }

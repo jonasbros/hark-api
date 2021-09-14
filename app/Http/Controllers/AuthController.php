@@ -61,7 +61,7 @@ class AuthController extends Controller
         }
     }
 
-    public function storeGoogle(Request $request) {       
+    public function storeGoogle(Request $request) {     
         try {
             $user = new User();
 
@@ -72,7 +72,10 @@ class AuthController extends Controller
             ]);
             // login if exists
             if( $existingUser ) {
-                $this->login($request);
+                return response()->json([
+                    'status' => 'success', 
+                    'message' => 'user found. logging in...',
+                ]);
             }else {
     
                 $user->display_name    = $request->name;
@@ -89,7 +92,10 @@ class AuthController extends Controller
                 $user->last_login      = date('Y-m-d H:i:s');
     
                 if( $user->save() ) {
-                    $this->login($request);
+                    return response()->json([
+                        'status' => 'success', 
+                        'message' => 'user successfully registered!!',
+                    ]);
                 }
             }
         }catch(\Exception $e) {
@@ -126,7 +132,10 @@ class AuthController extends Controller
     public function logout() {
         auth()->logout();
 
-        return response()->json(['status' => 'success', 'message' => 'Successfully logged out']);
+        return response()->json([
+            'status' => 'success', 
+            'message' => 'Successfully logged out'
+        ]);
     }
 
     /**
