@@ -32,10 +32,6 @@ class AuthController extends Controller
                 ], 422);
             }
             
-            $hashedPassword = Hash::make($request->password, [
-                'rounds' => 14,
-            ]);
-
             $user->display_name    = $request->name;
             $user->name            = $request->name;
             $user->email           = $request->email;
@@ -43,115 +39,23 @@ class AuthController extends Controller
             $user->websites        = NULL;
             $user->profile_picture = NULL;
             $user->cover_picture   = NULL;
-            $user->password        = $hashedPassword;
             $user->user_type       = 'user';
-            $user->custom_url      = time();
+            $user->custom_url      = $request->uid;
             $user->birthdate       = NULL;
             $user->last_login      = date('Y-m-d H:i:s');
             
             if( $user->save() ) {
-                $this->login($request);
-            }
-
-        }catch(\Exception $e) {
-            return response()->json([
-                'status' => 'error', 
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function storeGoogle(Request $request) {     
-        try {
-            $user = new User();
-
-            $existingUser = $user->where('email', $request->email)->first();
-
-            $request->password = Hash::make($request->password, [
-                'rounds' => 14,
-            ]);
-            // login if exists
-            if( $existingUser ) {
                 return response()->json([
                     'status' => 'success', 
-                    'message' => 'user found. logging in...',
-                ]);
-            }else {
-    
-                $user->display_name    = $request->name;
-                $user->name            = $request->name;
-                $user->email           = $request->email;
-                $user->bio             = NULL;
-                $user->websites        = NULL;
-                $user->profile_picture = $request->picture;
-                $user->cover_picture   = NULL;
-                $user->password        = $request->password;
-                $user->user_type       = 'user';
-                $user->custom_url      = time();
-                $user->birthdate       = NULL;
-                $user->last_login      = date('Y-m-d H:i:s');
-    
-                if( $user->save() ) {
-                    return response()->json([
-                        'status' => 'success', 
-                        'message' => 'user successfully registered!!',
-                    ]);
-                }
+                    'message' => 'User registered!',
+                ]);            
             }
+
         }catch(\Exception $e) {
             return response()->json([
                 'status' => 'error', 
                 'message' => $e->getMessage(),
             ]);
         }
-    }//storeGoogle
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function login(Request $request) {
-        $email = $request->email;
-        $password = $request->password;
-
-        if( empty($email) || empty($password) && $password !== null ) {
-
-            echo json_encode([
-                'status' => 'error', 
-                'message' => 'You must fill all the fields.',
-            ]);
-        }
-
-        $credentials = request(['email', 'password']);
-        if ( !$token = auth()->attempt($credentials) ) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        return $this->respondWithToken($token);
     }
-
-    public function logout() {
-        auth()->logout();
-
-        return response()->json([
-            'status' => 'success', 
-            'message' => 'Successfully logged out'
-        ]);
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
-    {
-        echo json_encode([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);    
-    }
-
 }
