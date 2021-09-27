@@ -31,10 +31,16 @@ class AuthController extends Controller
                     'message' => 'An account with that email is already registered.',
                 ], 422);
             }
+
+            $hashedPassword = Hash::make($request->password, [
+                'rounds' => 14,
+            ]);
+
             
             $user->display_name    = $request->name;
             $user->name            = $request->name;
             $user->email           = $request->email;
+            $user->password        = $hashedPassword;
             $user->bio             = NULL;
             $user->websites        = NULL;
             $user->profile_picture = NULL;
@@ -44,11 +50,8 @@ class AuthController extends Controller
             $user->birthdate       = NULL;
             $user->last_login      = date('Y-m-d H:i:s');
             
-            if( $user->save() ) {
-                return response()->json([
-                    'status' => 'success', 
-                    'message' => 'User registered!',
-                ]);            
+            if( $user->save() ) {                
+                $this->login($request);
             }
 
         }catch(\Exception $e) {
@@ -57,5 +60,54 @@ class AuthController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Get a JWT via given credentials.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function login(Request $request)
+    {
+        $password = $request->password;
+        $email = $request->email;
+
+        if( empty($email) || empty($password) && $password !== null ) {
+
+            echo json_encode([
+                'status' => 'error', 
+                'message' => 'You must fill all the fields.',
+            ]);
+        }
+
+        $credentials = request(['email', 'password']);
+
+        if ( !$token = auth()->attempt($credentials) ) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return $this->respondWithToken($token);
+    }
+
+    public function logout() {
+        auth()->logout();
+
+        return response()->json(['status' => 'success', 'message' => 'Successfully logged out']);
+    }
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function respondWithToken($token)
+    {
+        echo json_encode([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
     }
 }

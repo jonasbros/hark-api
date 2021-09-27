@@ -22,14 +22,14 @@ $router->group(['prefix' => 'api', 'middleware' => 'cors'], function () use ($ro
     
     $router->get('/getposts/{url}', 'UserPostController@get');
     // USER POSTS
-    $router->post('/submituserbasepost', 'UserPostController@storeBase');
-    $router->post('/likeuserpost', 'UserPostController@likePost');
-    $router->post('/unlikeuserpost', 'UserPostController@unlikePost');
-    $router->post('/getuserpostlikes', 'UserPostController@getPostLikes');
+    $router->post('/submitUserBasePost', 'UserPostController@storeBase');
+    $router->post('/likeUserPost', 'UserPostController@likePost');
+    $router->post('/unlikeUserPost', 'UserPostController@unlikePost');
+    $router->post('/getUserPostLikes', 'UserPostController@getPostLikes');
     
     
     // AUTH
-    $router->post('/me', 'UserController@me');
+    $router->get('/me', 'UserController@me');
     $router->get('/user', 'UserController@user');
 
     $router->post('/register', 'AuthController@store');
