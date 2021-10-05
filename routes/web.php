@@ -26,7 +26,10 @@ $router->group(['prefix' => 'api', 'middleware' => 'cors'], function () use ($ro
     $router->post('/likeUserPost', 'UserPostController@likePost');
     $router->post('/unlikeUserPost', 'UserPostController@unlikePost');
     $router->post('/getUserPostLikes', 'UserPostController@getPostLikes');
-    
+    //COMMENTS
+    $router->post('/submitUserBasePostComment', 'UserPostController@storeBaseComment');
+    $router->get('/getPostComments', 'UserPostController@getPostComments');
+
     
     // AUTH
     $router->get('/me', 'UserController@me');
