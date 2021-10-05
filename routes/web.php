@@ -19,16 +19,26 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api', 'middleware' => 'cors'], function () use ($router) {
     $router->get('/artists', 'ArtistController@index');
+    
     $router->get('/getposts/{url}', 'UserPostController@get');
+    // USER POSTS
+    $router->post('/submitUserBasePost', 'UserPostController@storeBase');
+    $router->post('/likeUserPost', 'UserPostController@likePost');
+    $router->post('/unlikeUserPost', 'UserPostController@unlikePost');
+    $router->post('/getUserPostLikes', 'UserPostController@getPostLikes');
+    //COMMENTS
+    $router->post('/submitUserBasePostComment', 'UserPostController@storeBaseComment');
+    $router->get('/getPostComments', 'UserPostController@getPostComments');
+
     
-    
-    $router->post('/me', 'UserController@me');
+    // AUTH
+    $router->get('/me', 'UserController@me');
     $router->get('/user', 'UserController@user');
 
     $router->post('/register', 'AuthController@store');
     $router->post('/login', 'AuthController@login');
     $router->post('/loginWithGoogle', 'AuthController@storeGoogle');
 
-    $router->get('/logout', 'AuthController@logout');
+    $router->post('/logout', 'AuthController@logout');
 
 });

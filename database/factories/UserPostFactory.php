@@ -17,7 +17,7 @@ class UserPostFactory extends Factory
             'body'            => $this->faker->paragraph(),
             'featured_image'  => $this->faker->url(),
             'upload_url'      => $this->faker->url(),
-            'post_type'       => 'post',
+            'post_type'       => 'base',
             'hashtags'        => 'tag1:tag2',
     	];
     }

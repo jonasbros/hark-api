@@ -9,23 +9,27 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-
-    public function me() {
-        return auth()->user();
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['user']]);
     }
     
     public function user(Request $request) {
-        $custom_url = $request->url;
-
-        $user = User::where('custom_url', $custom_url)->first();
+        $value = ($request->email ? $request->email : $request->url);
+        $column = ($request->email ? 'email' : 'custom_url');
+        
+        $user = User::where($column, $value)->first();
 
         if( isset($user->id) ) {
-            return $user;
+            return response()->json([
+                'status' => "success",
+                'user' => $user
+            ], 200);
         }
 
         return response()->json([
             'status' => "error",
-            'message' => 'user not found'
+            'message' => 'user not registered'
         ], 404);
     }
 }

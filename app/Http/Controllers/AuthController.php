@@ -31,25 +31,26 @@ class AuthController extends Controller
                     'message' => 'An account with that email is already registered.',
                 ], 422);
             }
-            
+
             $hashedPassword = Hash::make($request->password, [
                 'rounds' => 14,
             ]);
 
+            
             $user->display_name    = $request->name;
             $user->name            = $request->name;
             $user->email           = $request->email;
+            $user->password        = $hashedPassword;
             $user->bio             = NULL;
             $user->websites        = NULL;
             $user->profile_picture = NULL;
             $user->cover_picture   = NULL;
-            $user->password        = $hashedPassword;
             $user->user_type       = 'user';
-            $user->custom_url      = time();
+            $user->custom_url      = $request->uid;
             $user->birthdate       = NULL;
             $user->last_login      = date('Y-m-d H:i:s');
             
-            if( $user->save() ) {
+            if( $user->save() ) {                
                 $this->login($request);
             }
 
@@ -61,52 +62,15 @@ class AuthController extends Controller
         }
     }
 
-    public function storeGoogle(Request $request) {       
-        try {
-            $user = new User();
-
-            $existingUser = $user->where('email', $request->email)->first();
-
-            $request->password = Hash::make($request->password, [
-                'rounds' => 14,
-            ]);
-            // login if exists
-            if( $existingUser ) {
-                $this->login($request);
-            }else {
-    
-                $user->display_name    = $request->name;
-                $user->name            = $request->name;
-                $user->email           = $request->email;
-                $user->bio             = NULL;
-                $user->websites        = NULL;
-                $user->profile_picture = $request->picture;
-                $user->cover_picture   = NULL;
-                $user->password        = $request->password;
-                $user->user_type       = 'user';
-                $user->custom_url      = time();
-                $user->birthdate       = NULL;
-                $user->last_login      = date('Y-m-d H:i:s');
-    
-                if( $user->save() ) {
-                    $this->login($request);
-                }
-            }
-        }catch(\Exception $e) {
-            return response()->json([
-                'status' => 'error', 
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }//storeGoogle
     /**
      * Get a JWT via given credentials.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request) {
-        $email = $request->email;
+    public function login(Request $request)
+    {
         $password = $request->password;
+        $email = $request->email;
 
         if( empty($email) || empty($password) && $password !== null ) {
 
@@ -117,9 +81,11 @@ class AuthController extends Controller
         }
 
         $credentials = request(['email', 'password']);
+
         if ( !$token = auth()->attempt($credentials) ) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
         return $this->respondWithToken($token);
     }
 
@@ -142,7 +108,6 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
-        ]);    
+        ]);
     }
-
 }

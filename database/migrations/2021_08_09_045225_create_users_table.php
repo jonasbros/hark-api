@@ -18,11 +18,11 @@ class CreateUsersTable extends Migration
             $table->string('display_name')->length(255);
             $table->string('name', 255);
             $table->string('email')->length(255)->unique();
+            $table->string('password', 62)->nullable();
             $table->string('bio', 512)->nullable();
             $table->string('websites', 1024)->nullable();
             $table->string('profile_picture', 512)->nullable();
             $table->string('cover_picture', 512)->nullable();
-            $table->string('password', 62)->nullable();    
             $table->string('user_type', 32); 
             $table->string('custom_url', 100)->unique();    
             $table->date('birthdate')->nullable();

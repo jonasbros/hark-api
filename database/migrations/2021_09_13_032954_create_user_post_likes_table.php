@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSessionsTable extends Migration
+class CreateUserPostLikesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,25 @@ class CreateSessionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sessions', function (Blueprint $table) {
+        Schema::create('user_post_likes', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
-            $table->string('token', 512);
+            $table->bigInteger('post_id')->unsigned();
             $table->timestamps();
         });
 
-        Schema::table('sessions', function(Blueprint $table) {
+        Schema::table('user_post_likes', function(Blueprint $table) {
+            $table->foreign('post_id')
+                  ->references('id')
+                  ->on('user_posts')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
             $table->foreign('user_id')
                   ->references('id')
                   ->on('users')
                   ->onUpdate('cascade')
-                  ->onDelete('cascade');
+                  ->onDelete('cascade');                  
         });
     }
 
@@ -36,6 +42,6 @@ class CreateSessionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('session');
+        Schema::dropIfExists('user_post_likes');
     }
 }
