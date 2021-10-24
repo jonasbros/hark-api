@@ -23,14 +23,15 @@ $router->group(['prefix' => 'api', 'middleware' => 'cors'], function () use ($ro
     $router->get('/getposts/{url}', 'UserPostController@get');
     // USER POSTS
     $router->post('/submitUserBasePost', 'UserPostController@storeBase');
-    $router->post('/likeUserPost', 'UserPostController@likePost');
-    $router->post('/unlikeUserPost', 'UserPostController@unlikePost');
-    $router->post('/getUserPostLikes', 'UserPostController@getPostLikes');
+    //POST LIKES
+    $router->post('/likeUserPost', 'UserPostLikesController@likePost');
+    $router->post('/unlikeUserPost', 'UserPostLikesController@unlikePost');
+    $router->get('/getUserPostLikes', 'UserPostLikesController@getPostLikes');
     //COMMENTS
-    $router->post('/submitUserBasePostComment', 'UserPostController@storeBaseComment');
-    $router->get('/getPostComments', 'UserPostController@getPostComments');
-
-    
+    $router->post('/submitUserBasePostComment', 'UserPostsCommentsController@storeBaseComment');
+    $router->get('/getPostComments', 'UserPostsCommentsController@getPostComments');
+    $router->post('/likeUserPostComment', 'UserPostCommentsLikesController@likePostComment');
+    $router->get('/getUserPostCommentsLikes', 'UserPostCommentsLikesController@getUserPostCommentsLikes');
     // AUTH
     $router->get('/me', 'UserController@me');
     $router->get('/user', 'UserController@user');
