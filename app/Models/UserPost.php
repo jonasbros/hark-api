@@ -13,8 +13,15 @@ class UserPost extends Model
         'user_id',
     ];
 
+    protected $table = 'user_posts';
+    protected $primaryKey = 'id';
+    
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
     public function likes() {
-        return $this->hasMany(UserPostLikes::class);
+        return $this->hasMany(UserPostLikes::class, 'post_id');
     }
 
     public function comments() {
